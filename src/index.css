@@ -1,0 +1,646 @@
+body {
+      margin: 0;
+      font-family: 'Arial', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      background: linear-gradient(to bottom, #aa076b, #61045f);
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .home-page, .game-board {
+      background-color: rgba(0, 0, 0, 0.7);
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+      text-align: center;
+    }
+
+    h1, h2 {
+      color: #ffcc00;
+    }
+
+    button {
+      background-color: #ff3333;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      margin: 10px;
+      border-radius: 5px;
+      font-size: 1.2em;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #cc0000;
+    }
+
+    .game-board {
+      display: grid;
+      grid-template-areas:
+        "ai-hand ai-hand"
+        "deck-area discard"
+        "player-hand player-hand";
+      gap: 20px;
+      background: rgba(0, 0, 0, 0.8);
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      max-width: 1200px;
+      margin: 20px auto;
+    }
+
+    .deck-area {
+      grid-area: deck-area;
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .deck {
+      width: 120px;
+      height: 180px;
+      background: linear-gradient(45deg, #1a1a1a, #333);
+      border-radius: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #ffcc00;
+      font-weight: bold;
+      border: 2px solid #ffcc00;
+      box-shadow: 0 0 15px rgba(255, 204, 0, 0.3);
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .deck:hover {
+      transform: scale(1.05);
+    }
+
+    .player-hand, .ai-hand {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+    }
+
+    .player-hand {
+      grid-area: player-hand;
+      border-bottom: 2px solid #ffcc00;
+    }
+
+    .ai-hand {
+      grid-area: ai-hand;
+      border-top: 2px solid #ffcc00;
+    }
+
+    .card {
+      width: 100px;
+      height: 150px;
+      border-radius: 10px;
+      position: relative;
+      cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      background: white;
+      border: 1px solid #ddd;
+      margin: 5px;
+      user-select: none;
+    }
+
+    .card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .card-inner {
+      width: calc(100% - 12px);
+      height: calc(100% - 12px);
+      position: relative;
+      border-radius: 8px;
+      margin: 6px;
+      overflow: hidden;
+    }
+
+    .card.red .card-inner { background: #ff0000; }
+    .card.blue .card-inner { background: #0000ff; }
+    .card.green .card-inner { background: #00aa00; }
+    .card.yellow .card-inner { background: #ffff00; }
+
+    .card-corner {
+      position: absolute;
+      padding: 5px;
+      z-index: 2;
+    }
+
+    .card-corner.top-left {
+      top: 0px;
+      left: 0px;
+    }
+
+    .card-corner.bottom-right {
+      bottom: 0px;
+      right: 0px;
+      transform: rotate(180deg);
+    }
+
+    .card-corner .reverse-symbol {
+      width: 20px;
+      height: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .card-corner .reverse-arrows {
+      width: 20px;
+      height: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0;
+      padding: 0;
+    }
+
+    .card-corner .reverse-arrows i {
+      font-size: 1.2em;
+      color: white;
+      text-shadow: 
+        -1px -1px 0 #000,
+        1px -1px 0 #000,
+        -1px 1px 0 #000,
+        1px 1px 0 #000;
+    }
+
+    .card-center {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(-30deg);
+      width: 85px;
+      height: 110px;
+      background: white;
+      border-radius: 55px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+    }
+
+    .wild-circle {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      position: relative;
+      overflow: hidden;
+      border: 2px solid #333;
+    }
+
+    .wild-quadrant {
+      position: absolute;
+      width: 50%;
+      height: 50%;
+    }
+
+    .wild-quadrant.red { background: #ff0000; }
+    .wild-quadrant.blue { background: #0000ff; }
+    .wild-quadrant.yellow { background: #ffff00; }
+    .wild-quadrant.green { background: #00aa00; }
+
+    .wild-text {
+      display: none;
+    }
+
+    .reverse-symbol,
+    .skip-symbol,
+    .draw-two-symbol {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 2.5em;
+      transform: rotate(30deg);
+      box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-back {
+      background: linear-gradient(135deg, #1a1a1a, #333);
+    }
+
+    .card-back-content {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .uno-logo {
+      font-family: 'Arial Black', sans-serif;
+      font-size: 2em;
+      font-weight: bold;
+      color: #ffcc00;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      transform: rotate(-30deg);
+    }
+
+    .number-value {
+      font-size: 5.5em;
+      font-weight: 900;
+      transform: rotate(30deg);
+      font-family: 'Arial Black', sans-serif;
+      position: relative;
+      letter-spacing: -0.05em;
+    }
+
+    .card-value {
+      position: relative;
+      display: block;
+      font-size: 1.5em;
+      font-weight: 900;
+      color: white;
+      text-shadow: 
+        -1px -1px 0 #000,
+        1px -1px 0 #000,
+        -1px 1px 0 #000,
+        1px 1px 0 #000;
+      margin: 0;
+      padding: 0;
+      line-height: 1;
+    }
+
+    .card-value.action-value {
+      font-size: 1.2em;
+    }
+
+    .discard-pile {
+      grid-area: discard;
+      position: relative;
+      min-height: 180px;
+    }
+
+    .empty-discard {
+      background: rgba(255, 255, 255, 0.1);
+      border: 2px dashed #ffcc00;
+    }
+
+    .current-player-indicator {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255, 204, 0, 0.9);
+      padding: 8px 16px;
+      border-radius: 20px;
+      color: black;
+      font-weight: bold;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Animation for card dealing */
+    @keyframes dealCard {
+      from {
+        transform: translateY(-100px) rotate(360deg);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0) rotate(0);
+        opacity: 1;
+      }
+    }
+
+    .dealt-card {
+      animation: dealCard 0.5s ease-out;
+    }
+
+    /* Game status message styling */
+    .game-status {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255, 204, 0, 0.9);
+      padding: 10px 20px;
+      border-radius: 25px;
+      color: black;
+      font-weight: bold;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      z-index: 1000;
+    }
+
+    .player-name-form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      padding: 40px;
+      background-color: rgba(0, 0, 0, 0.7);
+      border-radius: 15px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    }
+
+    .player-name-form input {
+      padding: 10px;
+      border: 2px solid #ffcc00;
+      border-radius: 5px;
+      font-size: 1em;
+      background-color: rgba(255, 255, 255, 0.9);
+      color: #333;
+    }
+
+    .player-name-form button {
+      background-color: #ffcc00;
+      color: #333;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      font-size: 1em;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .player-name-form button:hover {
+      background-color: #e6b800;
+    }
+
+    .home-page {
+      background-color: rgba(0, 0, 0, 0.7);
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+      text-align: center;
+    }
+
+    .home-page h1 {
+      color: #ffcc00;
+      margin-bottom: 20px;
+    }
+
+    .home-page h2 {
+      color: #ffcc00;
+      margin-bottom: 30px;
+    }
+
+    .home-page button {
+      background-color: #ff3333;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      margin: 10px;
+      border-radius: 5px;
+      font-size: 1.2em;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .home-page button:hover {
+      background-color: #cc0000;
+    }
+
+    /* Action card symbols base styles */
+    .action-symbol {
+      width: 70px;
+      height: 70px;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transform: rotate(30deg);
+      font-family: 'Arial Black', sans-serif;
+      font-weight: 900;
+      color: currentColor;
+    }
+
+    /* Draw Two symbol */
+    .draw-two-symbol {
+      font-size: 2.8em;
+      font-weight: 900;
+      color: rgb(255, 255, 255);
+      text-shadow: 
+        -2px -2px 0 #000,
+        2px -2px 0 #000,
+        -2px 2px 0 #000,
+        2px 2px 0 #000;
+    }
+
+    .draw-two-symbol::before {
+      content: '+2';
+    }
+
+    /* Wild Draw Four symbol */
+    .wild-draw-four-symbol {
+      font-size: 2.8em;
+      font-weight: 900;
+    }
+
+    .wild-draw-four-symbol::before {
+      content: '+4';
+    }
+
+    /* Reverse symbol styling */
+    .reverse-symbol {
+      position: relative;
+      width: 70px;
+      height: 70px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .reverse-arrows {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .reverse-arrows i {
+      font-size: 3em;
+      color: black;
+    }
+
+    /* Corner reverse symbols */
+    .card-corner .reverse-arrows i {
+      font-size: 1em;
+      color: currentColor;
+    }
+
+    /* Card center for reverse cards */
+    .card .card-center.reverse-center {
+      background: white;
+      border-radius: 50%;
+      width: 80%;
+      height: 80%;
+    }
+
+    /* Skip symbol */
+    .skip-symbol {
+      width: 70px;
+      height: 70px;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transform: rotate(30deg);
+    }
+
+    .skip-circle {
+      width: 100%;
+      height: 100%;
+      border: 8px solid currentColor;
+      border-radius: 50%;
+      position: relative;
+    }
+
+    .skip-line {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 90%;
+      height: 8px;
+      background-color: currentColor;
+      transform: translate(-50%, -50%) rotate(-45deg);
+    }
+
+    /* Wild Draw Four card specific styling */
+    .card.wild {
+      background: white;
+    }
+
+    .card.wild .card-inner {
+      background: black;
+    }
+
+    /* Update corner +4 styling */
+    .card.wild .card-corner {
+      color: white;
+    }
+
+    /* Center oval styling */
+    .card.wild .card-center {
+      background: white;
+      width: 70%;
+      height: 60%;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    /* Update colored rectangles styling */
+    .wild-circle {
+      width: 80%;
+      height: 80%;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border: none;
+      border-radius: 0;
+      overflow: visible;
+    }
+
+    .wild-quadrant {
+      position: absolute;
+      width: 25px;
+      height: 35px;
+      border-radius: 4px;
+      border: 2px solid black;
+    }
+
+    /* Position the colored rectangles */
+    .wild-quadrant.blue {
+      top: 15%;
+      left: 25%;
+      z-index: 4;
+    }
+
+    .wild-quadrant.yellow {
+      top: 15%;
+      right: 25%;
+      z-index: 3;
+    }
+
+    .wild-quadrant.red {
+      bottom: 15%;
+      right: 25%;
+      z-index: 2;
+    }
+
+    .wild-quadrant.green {
+      bottom: 15%;
+      left: 25%;
+      z-index: 1;
+    }
+
+    /* Update colors to match the image */
+    .wild-quadrant.blue { background: #0066CC; }
+    .wild-quadrant.yellow { background: #FFD700; }
+    .wild-quadrant.red { background: #FF0000; }
+    .wild-quadrant.green { background: #008000; }
+
+    /* Center reverse symbol */
+    .card-center .reverse-symbol {
+      width: 60px;
+      height: 60px;
+    }
+
+    .card-center .reverse-arrows i {
+      font-size: 1.5em;
+      color: rgb(255, 255, 255);
+      text-shadow: 
+      -2px -2px 0 #000,
+      2px -2px 0 #000,
+      -2px 2px 0 #000,
+      2px 2px 0 #000; 
+    }
+
+    /* Skip/Block symbol styling */
+    .skip-symbol {
+      width: 60px;
+      height: 60px;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transform: rotate(30deg);
+      background: white;
+      border-radius: 50%;
+    }
+
+    .skip-symbol i {
+      font-size: 1.7em;
+      color: rgb(255, 255, 255);
+      text-shadow: 
+        -2px -2px 0 #000,
+        2px -2px 0 #000,
+        -2px 2px 0 #000,
+        2px 2px 0 #000;
+    }
+
+    /* Corner skip symbols */
+    .card-corner .skip-symbol {
+      width: 20px;
+      height: 20px;
+    }
+
+    .card-corner .skip-symbol i {
+      font-size: 1.2em;
+      color: white;
+      text-shadow: 
+        -1px -1px 0 #000,
+        1px -1px 0 #000,
+        -1px 1px 0 #000,
+        1px 1px 0 #000;
+    }
